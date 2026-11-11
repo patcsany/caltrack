@@ -21,6 +21,8 @@
       --accent-soft: #ffedd5;
       --danger: #ef4444;
       --danger-soft: #fee2e2;
+      --protein: #2563eb;
+      --protein-soft: #dbeafe;
       --radius-sm: 8px;
       --radius: 14px;
       --radius-lg: 20px;
@@ -145,7 +147,7 @@
       padding: var(--space-4);
     }
 
-    /* Navigation Tabs (Bottom on mobile, Top bar on larger screens) */
+    /* Navigation Tabs */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -268,7 +270,7 @@
 
     @media (min-width: 640px) {
       .kpi-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(5, 1fr);
       }
     }
 
@@ -307,6 +309,11 @@
       background: linear-gradient(180deg, #f0fdfa 0%, #ffffff 100%);
     }
 
+    .kpi-card.protein-kpi {
+      border-color: var(--protein);
+      background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+    }
+
     /* Progress Bar */
     .progress-wrap {
       margin-top: var(--space-3);
@@ -339,6 +346,10 @@
       background: var(--danger);
     }
 
+    .progress-fill.protein-bar {
+      background: var(--protein);
+    }
+
     /* Forms & Inputs */
     .form-grid {
       display: grid;
@@ -352,6 +363,9 @@
       }
       .form-grid.three-col {
         grid-template-columns: repeat(3, 1fr);
+      }
+      .form-grid.four-col {
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
@@ -614,6 +628,17 @@
       color: var(--accent);
     }
 
+    .protein-badge {
+      background: var(--protein-soft);
+      color: var(--protein);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 6px;
+      display: inline-block;
+    }
+
     /* Empty State */
     .empty-state {
       text-align: center;
@@ -690,7 +715,7 @@
     <div class="header-inner">
       <div class="brand-title">
         <span class="brand-badge">kcal</span>
-        <span>CalTrack</span>
+        <span>CalTrack + Protein</span>
       </div>
 
       <div class="date-picker-bar" aria-label="เลือกวันที่ย้อนหลังได้ 30 วัน">
@@ -717,7 +742,7 @@
     </button>
     <button type="button" class="nav-tab" data-target="view-tdee">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-      <span>คำนวณ TDEE</span>
+      <span>คำนวณ TDEE &amp; โปรตีน</span>
     </button>
   </nav>
 
@@ -726,7 +751,7 @@
     <section aria-label="สรุปพลังงานประจำวัน" style="margin-bottom: var(--space-4);">
       <div class="kpi-grid">
         <div class="kpi-card">
-          <span class="kpi-label">พลังงานที่ได้รับ (อาหาร)</span>
+          <span class="kpi-label">พลังงานได้รับ (อาหาร)</span>
           <div>
             <span class="kpi-value" id="kpiIntake">0</span>
             <span class="kpi-unit">kcal</span>
@@ -746,6 +771,13 @@
             <span class="kpi-unit">kcal</span>
           </div>
         </div>
+        <div class="kpi-card protein-kpi">
+          <span class="kpi-label">โปรตีนที่ได้รับ</span>
+          <div>
+            <span class="kpi-value" id="kpiProtein">0</span>
+            <span class="kpi-unit">/ <span id="kpiProteinTarget">100</span> g</span>
+          </div>
+        </div>
         <div class="kpi-card highlight">
           <span class="kpi-label">เป้าหมาย TDEE ต่อวัน</span>
           <div>
@@ -755,13 +787,25 @@
         </div>
       </div>
 
-      <div class="card" style="margin-top: var(--space-3); padding: var(--space-4);">
-        <div class="progress-meta">
-          <span id="selectedDateLabel">วันนี้</span>
-          <span id="remainingLabel">คงเหลือ 2,000 kcal</span>
+      <!-- Progressive Bars Card -->
+      <div class="card" style="margin-top: var(--space-3); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3);">
+        <div>
+          <div class="progress-meta">
+            <span id="selectedDateLabel" style="font-weight: 700;">วันนี้</span>
+            <span id="remainingLabel">คงเหลือ 2,000 kcal</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="dailyProgressFill"></div>
+          </div>
         </div>
-        <div class="progress-track">
-          <div class="progress-fill" id="dailyProgressFill"></div>
+        <div>
+          <div class="progress-meta" style="color: var(--protein);">
+            <span>ความคืบหน้าการรับโปรตีนรายวัน</span>
+            <span id="proteinRemainingLabel">คงเหลือ 100 g</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill protein-bar" id="proteinProgressFill"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -771,8 +815,8 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <h2 class="card-title">ถ่ายรูปอาหารและคำนวณแคลอรี่</h2>
-            <p class="card-subtitle">ถ่ายภาพอาหารหรือเลือกรูปจากมือถือเพื่อประเมินและบันทึก kcal</p>
+            <h2 class="card-title">ถ่ายรูปอาหารและคำนวณแคลอรี่ &amp; โปรตีน</h2>
+            <p class="card-subtitle">ถ่ายภาพอาหารหรือเลือกรูปจากมือถือเพื่อประเมินและบันทึกข้อมูลโภชนาการ</p>
           </div>
         </div>
 
@@ -810,18 +854,19 @@
           <div class="estimate-notice" id="photoEstimateNotice" style="display: none;"></div>
 
           <div style="margin-top: var(--space-3);">
-            <span style="font-size: 0.8rem; font-weight: 600; color: var(--muted);">เลือกเมนูอาหารยอดนิยมเพื่อคำนวณเร็ว:</span>
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--muted);">เลือกเมนูอาหารยอดนิยม เพื่อคำนวณเร็ว:</span>
             <div class="preset-chips" id="foodPresetChips">
-              <button type="button" class="chip" data-name="ข้าวกะเพราไก่ไข่ดาว" data-kcal="630">ข้าวกะเพราไก่ไข่ดาว (630 kcal)</button>
-              <button type="button" class="chip" data-name="ข้าวมันไก่" data-kcal="585">ข้าวมันไก่ (585 kcal)</button>
-              <button type="button" class="chip" data-name="ส้มตำไทย + ข้าวเหนียว" data-kcal="350">ส้มตำไทย + ข้าวเหนียว (350 kcal)</button>
-              <button type="button" class="chip" data-name="ก๋วยเตี๋ยวน้ำใสลูกชิ้นหมู" data-kcal="380">ก๋วยเตี๋ยวน้ำใส (380 kcal)</button>
-              <button type="button" class="chip" data-name="สลัดผักอกไก่" data-kcal="280">สลัดผักอกไก่ (280 kcal)</button>
-              <button type="button" class="chip" data-name="กาแฟเย็น / ชาเย็น" data-kcal="220">กาแฟเย็น / ชาเย็น (220 kcal)</button>
+              <button type="button" class="chip" data-name="ข้าวกะเพราอกไก่ไข่ดาว" data-kcal="550" data-protein="38">กะเพราอกไก่ไข่ดาว (550 kcal, โปรตีน 38g)</button>
+              <button type="button" class="chip" data-name="อกไก่นุ่มต้ม/ย่าง" data-kcal="160" data-protein="30">อกไก่นุ่ม (160 kcal, โปรตีน 30g)</button>
+              <button type="button" class="chip" data-name="ข้าวมันไก่เนื้ออกไม่หนัง" data-kcal="510" data-protein="26">ข้าวมันไก่อก (510 kcal, โปรตีน 26g)</button>
+              <button type="button" class="chip" data-name="ไข่ต้ม 2 ฟอง" data-kcal="150" data-protein="13">ไข่ต้ม 2 ฟอง (150 kcal, โปรตีน 13g)</button>
+              <button type="button" class="chip" data-name="ก๋วยเตี๋ยวเส้นหมี่น้ำใสลูกชิ้นอกไก่" data-kcal="320" data-protein="22">หมี่น้ำใสลูกชิ้นอกไก่ (320 kcal, โปรตีน 22g)</button>
+              <button type="button" class="chip" data-name="เวย์โปรตีน 1 สกู๊ป" data-kcal="120" data-protein="25">เวย์โปรตีน 1 สกู๊ป (120 kcal, โปรตีน 25g)</button>
+              <button type="button" class="chip" data-name="สลัดทูน่าในน้ำแร่" data-kcal="180" data-protein="24">สลัดทูน่าแร (180 kcal, โปรตีน 24g)</button>
             </div>
           </div>
 
-          <div class="form-grid three-col" style="margin-top: var(--space-4);">
+          <div class="form-grid four-col" style="margin-top: var(--space-4);">
             <div class="field">
               <label for="foodMealType">มื้ออาหาร</label>
               <select id="foodMealType" class="select">
@@ -839,11 +884,15 @@
               <label for="foodKcalInput">พลังงาน (kcal)</label>
               <input type="number" id="foodKcalInput" class="input" placeholder="เช่น 500" min="1" max="10000" required>
             </div>
+            <div class="field">
+              <label for="foodProteinInput">โปรตีน (กรัม)</label>
+              <input type="number" id="foodProteinInput" class="input" placeholder="เช่น 25" min="0" max="500" required>
+            </div>
           </div>
-          <div id="foodFormError" class="error-msg">กรุณาระบุชื่อเมนูอาหารและจำนวนแคลอรี่ที่มากกว่า 0</div>
+          <div id="foodFormError" class="error-msg">กรุณาระบุชื่อเมนูอาหาร จำนวนแคลอรี่ที่มากกว่า 0 และโปรตีนที่ถูกต้อง (เป็นศูนย์ได้)</div>
 
           <div style="margin-top: var(--space-4); display: flex; justify-content: flex-end;">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">+ บันทึกรายการอาหาร</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">+ บันทึกรายการอาหารและโปรตีน</button>
           </div>
         </form>
       </div>
@@ -851,7 +900,7 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <h3 class="card-title">รายการอาหารที่บันทึกในวันนี้</h3>
+            <h3 class="card-title">รายการอาหารและโปรตีนที่บันทึกในวันนี้</h3>
             <p class="card-subtitle">แสดงรายการอาหารของวันที่เลือก</p>
           </div>
         </div>
@@ -931,7 +980,7 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <h3 class="card-title">ตารางสรุปข้อมูลย้อนหลัง 30 วัน</h3>
+            <h3 class="card-title">ตารางสรุปข้อมูลและการรับโปรตีนย้อนหลัง 30 วัน</h3>
             <p class="card-subtitle">แตะที่แถวเพื่อดูหรือแก้ไขข้อมูลของวันนั้น</p>
           </div>
         </div>
@@ -941,6 +990,7 @@
               <tr>
                 <th>วันที่</th>
                 <th class="num">อาหาร (kcal)</th>
+                <th class="num">โปรตีน (g)</th>
                 <th class="num">ออกกำลังกาย (kcal)</th>
                 <th class="num">สุทธิ (kcal)</th>
                 <th class="num">เทียบ TDEE</th>
@@ -952,13 +1002,13 @@
       </div>
     </section>
 
-    <!-- VIEW 4: TDEE CALCULATOR -->
+    <!-- VIEW 4: TDEE & PROTEIN CALCULATOR -->
     <section id="view-tdee" class="view-section">
       <div class="card">
         <div class="card-header">
           <div>
-            <h2 class="card-title">คำนวณค่าพลังงานที่ใช้ต่อวัน (TDEE)</h2>
-            <p class="card-subtitle">คำนวณด้วยสูตรมาตรฐาน Mifflin-St Jeor เพื่อตั้งเป็นเป้าหมายประจำวัน</p>
+            <h2 class="card-title">คำนวณค่าพลังงานที่ใช้ต่อวัน (TDEE) &amp; เป้าหมายโปรตีน</h2>
+            <p class="card-subtitle">คำนวณด้วยสูตรมาตรฐานเพื่อรับคำแนะนำความต้องการแคลอรี่และโปรตีนต่อวัน</p>
           </div>
         </div>
 
@@ -985,21 +1035,32 @@
             </div>
           </div>
 
-          <div class="field" style="margin-top: var(--space-3);">
-            <label for="tdeeActivity">ระดับกิจกรรมในชีวิตประจำวัน</label>
-            <select id="tdeeActivity" class="select">
-              <option value="1.2">ไม่ออกกำลังกาย หรือทำงานนั่งโต๊ะ (x1.2)</option>
-              <option value="1.375" selected>ออกกำลังกายเบาๆ 1-3 วัน/สัปดาห์ (x1.375)</option>
-              <option value="1.55">ออกกำลังกายปานกลาง 3-5 วัน/สัปดาห์ (x1.55)</option>
-              <option value="1.725">ออกกำลังกายหนัก 6-7 วัน/สัปดาห์ (x1.725)</option>
-              <option value="1.9">ออกกำลังกายหนักมาก หรือใช้แรงงานหนัก (x1.9)</option>
-            </select>
+          <div class="form-grid two-col" style="margin-top: var(--space-3);">
+            <div class="field">
+              <label for="tdeeActivity">ระดับกิจกรรมในชีวิตประจำวัน</label>
+              <select id="tdeeActivity" class="select">
+                <option value="1.2">ไม่ออกกำลังกาย หรือทำงานนั่งโต๊ะ (x1.2)</option>
+                <option value="1.375" selected>ออกกำลังกายเบาๆ 1-3 วัน/สัปดาห์ (x1.375)</option>
+                <option value="1.55">ออกกำลังกายปานกลาง 3-5 วัน/สัปดาห์ (x1.55)</option>
+                <option value="1.725">ออกกำลังกายหนัก 6-7 วัน/สัปดาห์ (x1.725)</option>
+                <option value="1.9">ออกกำลังกายหนักมาก หรือใช้แรงงานหนัก (x1.9)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="tdeeProteinGoal">เป้าหมายโปรตีน (กรัม ต่อน้ำหนักตัว 1 กก.)</label>
+              <select id="tdeeProteinGoal" class="select">
+                <option value="1.2">ดูแลสุขภาพทั่วไป (1.2g / กก.)</option>
+                <option value="1.5" selected>ลดไขมัน / กระชับสัดส่วน (1.5g / กก.)</option>
+                <option value="1.8">เสริมสร้างกล้ามเนื้อ / เวทเทรนนิ่ง (1.8g / กก.)</option>
+                <option value="2.0">เพาะกาย / ฝึกซ้อมหนัก (2.0g / กก.)</option>
+              </select>
+            </div>
           </div>
 
           <div id="tdeeFormError" class="error-msg">กรุณากรอกข้อมูลอายุ น้ำหนัก และส่วนสูงให้ถูกต้อง</div>
 
           <div class="card" style="margin-top: var(--space-4); background: var(--surface-subtle);">
-            <div class="form-grid two-col">
+            <div class="form-grid three-col">
               <div>
                 <div class="kpi-label">พลังงานพื้นฐาน (BMR)</div>
                 <div class="kpi-value" id="calcBmrResult">1,568 <span class="kpi-unit">kcal/วัน</span></div>
@@ -1008,11 +1069,15 @@
                 <div class="kpi-label">พลังงานที่ใช้ทั้งหมดต่อวัน (TDEE)</div>
                 <div class="kpi-value" style="color: var(--brand);" id="calcTdeeResult">2,155 <span class="kpi-unit">kcal/วัน</span></div>
               </div>
+              <div>
+                <div class="kpi-label">เป้าหมายโปรตีนที่แนะนำ</div>
+                <div class="kpi-value" style="color: var(--protein);" id="calcProteinResult">98 <span class="kpi-unit">g/วัน</span></div>
+              </div>
             </div>
           </div>
 
           <div style="margin-top: var(--space-4);">
-            <button type="submit" class="btn btn-primary" style="width: 100%;">คำนวณและบันทึกเป็นเป้าหมาย TDEE ประจำวัน</button>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">คำนวณและบันทึกเป็นเป้าหมาย TDEE &amp; โปรตีนประจำวัน</button>
           </div>
         </form>
       </div>
@@ -1021,7 +1086,7 @@
 
   <script>
     (function () {
-      const STORAGE_KEY = 'caltrack_mobile_state_v1';
+      const STORAGE_KEY = 'caltrack_mobile_state_v2';
 
       // Format YYYY-MM-DD in local time
       function formatDateISO(dateObj) {
@@ -1038,17 +1103,19 @@
       minDateObj.setDate(todayObj.getDate() - 29); // 30-day window inclusive of today
       const minDateISO = formatDateISO(minDateObj);
 
-      // Default application state (starts clean/empty for user logs)
+      // Default application state
       let state = {
         selectedDate: todayISO,
         tdee: 2000,
         bmr: 1450,
+        proteinTarget: 98,
         profile: {
           gender: 'male',
           age: 30,
           weight: 65,
           height: 170,
-          activity: 1.375
+          activity: 1.375,
+          proteinGoalMultiplier: 1.5
         },
         days: {} // keyed by YYYY-MM-DD -> { foods: [], exercises: [] }
       };
@@ -1108,10 +1175,14 @@
       const kpiIntake = document.getElementById('kpiIntake');
       const kpiBurned = document.getElementById('kpiBurned');
       const kpiNet = document.getElementById('kpiNet');
+      const kpiProtein = document.getElementById('kpiProtein');
+      const kpiProteinTarget = document.getElementById('kpiProteinTarget');
       const kpiTdee = document.getElementById('kpiTdee');
       const selectedDateLabel = document.getElementById('selectedDateLabel');
       const remainingLabel = document.getElementById('remainingLabel');
+      const proteinRemainingLabel = document.getElementById('proteinRemainingLabel');
       const dailyProgressFill = document.getElementById('dailyProgressFill');
+      const proteinProgressFill = document.getElementById('proteinProgressFill');
 
       // Food Form Elements
       const foodForm = document.getElementById('foodForm');
@@ -1125,6 +1196,7 @@
       const foodMealType = document.getElementById('foodMealType');
       const foodNameInput = document.getElementById('foodNameInput');
       const foodKcalInput = document.getElementById('foodKcalInput');
+      const foodProteinInput = document.getElementById('foodProteinInput');
       const foodFormError = document.getElementById('foodFormError');
       const foodListContainer = document.getElementById('foodListContainer');
       const foodPresetChips = document.getElementById('foodPresetChips');
@@ -1145,13 +1217,11 @@
       const tdeeWeight = document.getElementById('tdeeWeight');
       const tdeeHeight = document.getElementById('tdeeHeight');
       const tdeeActivity = document.getElementById('tdeeActivity');
+      const tdeeProteinGoal = document.getElementById('tdeeProteinGoal');
       const tdeeFormError = document.getElementById('tdeeFormError');
       const calcBmrResult = document.getElementById('calcBmrResult');
       const calcTdeeResult = document.getElementById('calcTdeeResult');
-
-      // History Elements
-      const historyTableBody = document.getElementById('historyTableBody');
-      const historyChartCanvas = document.getElementById('historyChartCanvas');
+      const calcProteinResult = document.getElementById('calcProteinResult');
 
       let currentPhotoDataUrl = null;
       let historyChart = null;
@@ -1206,7 +1276,7 @@
         setSelectedDate(formatDateISO(cur));
       });
 
-      // Compress & Preview Photo + Estimate Calories
+      // Compress & Preview Photo + Estimate Calories & Protein
       foodPhotoInput.addEventListener('change', (e) => {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
@@ -1231,8 +1301,9 @@
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, w, h);
 
-            // Compute simple color/brightness signature for portion calorie estimation
+            // Compute simple color/brightness signature for portion calorie & protein estimation
             let estimatedKcal = 450;
+            let estimatedProtein = 25;
             try {
               const imgData = ctx.getImageData(0, 0, w, h).data;
               let rSum = 0, gSum = 0, bSum = 0;
@@ -1246,13 +1317,18 @@
               const avgR = rSum / samples;
               const avgG = gSum / samples;
               const avgB = bSum / samples;
-              // Heuristic estimation between 260 and 680 kcal based on warmth/density
+              // Warm/meaty tones get slightly more protein/calories
               const warmth = Math.max(0, avgR - avgG * 0.4 - avgB * 0.4);
               estimatedKcal = Math.round((280 + (warmth * 1.8)) / 10) * 10;
-              if (estimatedKcal < 220) estimatedKcal = 250;
-              if (estimatedKcal > 750) estimatedKcal = 680;
+              if (estimatedKcal < 150) estimatedKcal = 180;
+              if (estimatedKcal > 750) estimatedKcal = 650;
+
+              estimatedProtein = Math.round(15 + (warmth * 0.15));
+              if (estimatedProtein < 8) estimatedProtein = 15;
+              if (estimatedProtein > 45) estimatedProtein = 35;
             } catch (err) {
               estimatedKcal = 450;
+              estimatedProtein = 25;
             }
 
             currentPhotoDataUrl = canvas.toDataURL('image/jpeg', 0.72);
@@ -1270,9 +1346,12 @@
             if (!foodKcalInput.value) {
               foodKcalInput.value = estimatedKcal;
             }
+            if (!foodProteinInput.value) {
+              foodProteinInput.value = estimatedProtein;
+            }
 
             photoEstimateNotice.style.display = 'block';
-            photoEstimateNotice.textContent = `ประเมินพลังงานเบื้องต้นจากภาพถ่ายประมาณ ${numberFormatter.format(estimatedKcal)} kcal (คุณสามารถปรับแก้ชื่อเมนูและตัวเลขแคลอรี่ตามจริงได้ก่อนบันทึก)`;
+            photoEstimateNotice.textContent = `ประเมินเบื้องต้นจากภาพ: ประมาณ ${numberFormatter.format(estimatedKcal)} kcal และ โปรตีน ${estimatedProtein} กรัม (คุณสามารถปรับแก้ตัวเลขแคลอรี่และโปรตีนจริงตามต้องการได้ก่อนบันทึก)`;
           };
           img.src = evt.target.result;
         };
@@ -1291,12 +1370,13 @@
 
       clearPhotoBtn.addEventListener('click', resetPhotoCapture);
 
-      // Quick Food Presets
+      // Quick Food Presets (now including protein)
       foodPresetChips.addEventListener('click', (e) => {
         const chip = e.target.closest('.chip');
         if (!chip) return;
         foodNameInput.value = chip.dataset.name || '';
         foodKcalInput.value = chip.dataset.kcal || '';
+        foodProteinInput.value = chip.dataset.protein || '0';
         foodFormError.classList.remove('visible');
       });
 
@@ -1305,9 +1385,10 @@
         e.preventDefault();
         const name = foodNameInput.value.trim();
         const kcal = Math.round(Number(foodKcalInput.value));
+        const protein = Math.round(Number(foodProteinInput.value)) || 0;
         const meal = foodMealType.value;
 
-        if (!name || !Number.isFinite(kcal) || kcal <= 0) {
+        if (!name || !Number.isFinite(kcal) || kcal <= 0 || protein < 0) {
           foodFormError.classList.add('visible');
           return;
         }
@@ -1319,12 +1400,14 @@
           meal,
           name,
           kcal,
+          protein,
           photo: currentPhotoDataUrl,
           time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
         });
 
         foodNameInput.value = '';
         foodKcalInput.value = '';
+        foodProteinInput.value = '';
         resetPhotoCapture();
         saveState();
         renderAll();
@@ -1390,13 +1473,14 @@
         }
       });
 
-      // TDEE Calculation
+      // TDEE & Protein Calculation
       function computeBmrAndTdee() {
         const gender = tdeeGender.value;
         const age = Number(tdeeAge.value);
         const weight = Number(tdeeWeight.value);
         const height = Number(tdeeHeight.value);
         const activity = Number(tdeeActivity.value);
+        const proteinMultiplier = Number(tdeeProteinGoal.value);
 
         if (!age || age <= 0 || !weight || weight <= 0 || !height || height <= 0) {
           return null;
@@ -1408,12 +1492,17 @@
         bmr = Math.round(bmr);
         const tdee = Math.round(bmr * activity);
 
+        // Daily recommended protein
+        const recommendedProtein = Math.round(weight * proteinMultiplier);
+
         calcBmrResult.innerHTML = `${numberFormatter.format(bmr)} <span class="kpi-unit">kcal/วัน</span>`;
         calcTdeeResult.innerHTML = `${numberFormatter.format(tdee)} <span class="kpi-unit">kcal/วัน</span>`;
-        return { bmr, tdee, gender, age, weight, height, activity };
+        calcProteinResult.innerHTML = `${numberFormatter.format(recommendedProtein)} <span class="kpi-unit">g/วัน</span>`;
+
+        return { bmr, tdee, proteinTarget: recommendedProtein, gender, age, weight, height, activity, proteinMultiplier };
       }
 
-      [tdeeGender, tdeeAge, tdeeWeight, tdeeHeight, tdeeActivity].forEach(el => {
+      [tdeeGender, tdeeAge, tdeeWeight, tdeeHeight, tdeeActivity, tdeeProteinGoal].forEach(el => {
         el.addEventListener('input', computeBmrAndTdee);
         el.addEventListener('change', computeBmrAndTdee);
       });
@@ -1428,12 +1517,14 @@
         tdeeFormError.classList.remove('visible');
         state.bmr = res.bmr;
         state.tdee = res.tdee;
+        state.proteinTarget = res.proteinTarget;
         state.profile = {
           gender: res.gender,
           age: res.age,
           weight: res.weight,
           height: res.height,
-          activity: res.activity
+          activity: res.activity,
+          proteinGoalMultiplier: res.proteinMultiplier
         };
         saveState();
         renderAll();
@@ -1447,6 +1538,7 @@
           tdeeWeight.value = state.profile.weight || 65;
           tdeeHeight.value = state.profile.height || 170;
           tdeeActivity.value = String(state.profile.activity || 1.375);
+          tdeeProteinGoal.value = String(state.profile.proteinGoalMultiplier || 1.5);
         }
         computeBmrAndTdee();
       }
@@ -1464,14 +1556,19 @@
       function renderDailyView() {
         const rec = getDayRecord(state.selectedDate);
         const intake = rec.foods.reduce((sum, f) => sum + f.kcal, 0);
+        const totalProtein = rec.foods.reduce((sum, f) => sum + (f.protein || 0), 0);
         const burned = rec.exercises.reduce((sum, x) => sum + x.kcal, 0);
         const net = intake - burned;
         const tdee = state.tdee || 2000;
+        const proteinTarget = state.proteinTarget || 98;
         const diff = tdee - net;
+        const proteinDiff = proteinTarget - totalProtein;
 
         kpiIntake.textContent = numberFormatter.format(intake);
         kpiBurned.textContent = numberFormatter.format(burned);
         kpiNet.textContent = numberFormatter.format(net);
+        kpiProtein.textContent = numberFormatter.format(totalProtein);
+        kpiProteinTarget.textContent = numberFormatter.format(proteinTarget);
         kpiTdee.textContent = numberFormatter.format(tdee);
 
         const dateObj = parseISODateLocal(state.selectedDate);
@@ -1479,6 +1576,7 @@
           ? `วันนี้ (${thaiDateFormatter.format(dateObj)})`
           : thaiDateFormatter.format(dateObj);
 
+        // Calorie Progress
         if (diff >= 0) {
           remainingLabel.textContent = `รับได้อีก ${numberFormatter.format(diff)} kcal จากเป้าหมาย TDEE`;
           dailyProgressFill.classList.remove('over');
@@ -1486,9 +1584,17 @@
           remainingLabel.textContent = `เกินเป้าหมาย TDEE อยู่ ${numberFormatter.format(Math.abs(diff))} kcal`;
           dailyProgressFill.classList.add('over');
         }
-
         const pct = Math.min(100, Math.max(0, Math.round((Math.max(0, net) / tdee) * 100)));
         dailyProgressFill.style.width = `${pct}%`;
+
+        // Protein Progress
+        if (proteinDiff >= 0) {
+          proteinRemainingLabel.textContent = `ขาดอีก ${numberFormatter.format(proteinDiff)} g เพื่อบรรลุเป้าหมาย`;
+        } else {
+          proteinRemainingLabel.textContent = `ทะลุเป้าหมายโปรตีนไปแล้ว ${numberFormatter.format(Math.abs(proteinDiff))} g!`;
+        }
+        const proteinPct = Math.min(100, Math.max(0, Math.round((totalProtein / proteinTarget) * 100)));
+        proteinProgressFill.style.width = `${proteinPct}%`;
 
         // Render Food List
         if (rec.foods.length === 0) {
@@ -1502,7 +1608,10 @@
                   : `<div class="entry-thumb">อาหาร</div>`
                 }
                 <div class="entry-info">
-                  <div class="entry-title">${escapeHtml(item.name)}</div>
+                  <div class="entry-title">
+                    ${escapeHtml(item.name)}
+                    ${item.protein ? `<span class="protein-badge">โปรตีน ${item.protein}g</span>` : ''}
+                  </div>
                   <div class="entry-meta">${escapeHtml(item.meal)} • ${escapeHtml(item.time || '')}</div>
                 </div>
               </div>
@@ -1545,6 +1654,7 @@
           const iso = formatDateISO(d);
           const rec = state.days[iso] || { foods: [], exercises: [] };
           const intake = rec.foods.reduce((s, f) => s + f.kcal, 0);
+          const protein = rec.foods.reduce((s, f) => s + (f.protein || 0), 0);
           const burned = rec.exercises.reduce((s, x) => s + x.kcal, 0);
           const net = intake - burned;
           series.push({
@@ -1553,6 +1663,7 @@
             shortLabel: shortChartDateFormatter.format(d),
             fullLabel: thaiDateFormatter.format(d),
             intake,
+            protein,
             burned,
             net
           });
@@ -1661,6 +1772,7 @@
                 ${day.iso === todayISO ? ' <span style="font-size:0.75rem; color:var(--brand);">(วันนี้)</span>' : ''}
               </td>
               <td class="num">${numberFormatter.format(day.intake)}</td>
+              <td class="num" style="color: var(--protein); font-weight: 700;">${numberFormatter.format(day.protein)}g</td>
               <td class="num">${numberFormatter.format(day.burned)}</td>
               <td class="num"><strong>${numberFormatter.format(day.net)}</strong></td>
               <td class="num" style="color: ${diff > 0 ? 'var(--danger)' : 'var(--brand)'};">${diffStr}</td>
